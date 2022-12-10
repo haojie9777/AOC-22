@@ -6,22 +6,28 @@ with open("./inputs/day9.txt", "r") as f:
   # track positions that the tail has visited
   visited = set()
   visited.add((0,0))
+  
+  knots = [(0,0) for i in range(9)]
+  
+  def new_head(cur_head, direction):
+      new_head = None
+	  # find new head position
+      if direction == "R":
+        new_head = (cur_head[0], cur_head[1] + 1)
+      elif direction == "L":
+        new_head = (cur_head[0], cur_head[1] - 1)
+      elif direction == "U":
+        new_head = (cur_head[0] - 1, cur_head[1])
+      else:
+        new_head =(cur_head[0] + 1, cur_head[1])
+      return new_head
+
+      
 
 
-  def advance(direction, cur_head, cur_tail):
-    global pos_count
-    new_head = None
+  def advance(cur_head, new_head, cur_tail):
     new_tail = None
-    # find new head position
-    if direction == "R":
-      new_head = (cur_head[0], cur_head[1] + 1)
-    elif direction == "L":
-      new_head = (cur_head[0], cur_head[1] - 1)
-    elif direction == "U":
-      new_head = (cur_head[0] - 1, cur_head[1])
-    else:
-      new_head =(cur_head[0] + 1, cur_head[1])
-    
+  
     # check if new head is touching tail, then tail don't need to move
     # same row    
     if cur_tail[0] == new_head[0] and 0 <= abs(cur_tail[1] - new_head[1]) <= 1:
@@ -48,19 +54,23 @@ with open("./inputs/day9.txt", "r") as f:
         else:
              new_tail = (cur_tail[0] + 1, cur_tail[1])
     # scenario 2: tail jumps to head prev position from diagonal arrangement
-    new_tail = cur_head
+    else:
+       new_tail = cur_head
     return [new_head, new_tail]
     
-  cur_head = (0,0)
-  cur_tail = (0,0)
+
   for line in lines:
     tokens = line.split(" ")
     direction, steps = tokens[0], int(tokens[1])
     for i in range(steps):
-      cur_head, cur_tail = advance(direction, cur_head, cur_tail)
-      # mark new position that the tail has visited
-      if cur_tail not in visited:
-        visited.add(cur_tail)
-        pos_count += 1
-  
-  print(pos_count)
+        for j in range(8):
+            old_head = knots[j]
+            if j == 0:
+               knots[j] = new_head(knots[j], direction)
+            knots[j], knots[j+1] = advance(old_head, knots[j], knots[j+1])
+                
+        print(knots,i)
+        if knots[-1] not in visited:
+            visited.add(knots[-1])
+            pos_count += 1
+print(pos_count)
