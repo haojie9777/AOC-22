@@ -22,7 +22,6 @@ class Monkey:
             # stage 1
             if self.operation_operand == "*":
                 if self.operation_value:
-                    eval
                     cur_item *= self.operation_value
                 else:
                     cur_item *= cur_item
